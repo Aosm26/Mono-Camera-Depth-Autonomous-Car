@@ -51,3 +51,9 @@ ros2 launch autonomous_car nav_launch.py
 
 ### 4. Sending Goals
 Open RViz2 (which automatically opens with the navigation launch) and use the **2D Goal Pose** tool at the top toolbar to send goals to the robot.
+
+### 5. Stopping All Processes
+To stop Gazebo, Nav2, and RViz2 all at once, run:
+```bash
+./stop_all.sh
+```

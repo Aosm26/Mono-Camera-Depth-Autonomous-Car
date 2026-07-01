@@ -65,3 +65,13 @@ ros2 launch autonomous_car nav_launch.py
 2. Üst menü barında bulunan **"2D Goal Pose"** butonuna tıklayın.
 3. Harita üzerinde robotun gitmesini istediğiniz herhangi bir noktaya tıklayıp basılı tutarak yön belirtin.
 4. Robot, derinlik kamerasından gelen verileri kullanarak engellerden kaçarak belirlediğiniz hedefe otonom şekilde hareket edecektir.
+
+---
+
+## 5. Tüm Süreçleri Sonlandırma
+
+Çalışmanız bittiğinde veya sistem kaynaklarını serbest bırakmak istediğinizde, arka planda çalışan tüm ROS2, Gazebo ve Nav2 süreçlerini tek seferde kapatmak için şu komutu çalıştırabilirsiniz:
+
+```bash
+./stop_all.sh
+```
