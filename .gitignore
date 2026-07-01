@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ROS / colcon build files
+log/
+build/
+install/
+.colcon/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*~
