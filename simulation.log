@@ -1,0 +1,40 @@
+[INFO] [launch]: All log files can be found below /home/aosm/.ros/log/2026-07-02-17-56-25-133595-aosm-IdeaPad-Gaming-3-15ACH6-14542
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [robot_state_publisher-1]: process started with pid [14545]
+[INFO] [gzserver-2]: process started with pid [14547]
+[INFO] [gzclient   -3]: process started with pid [14549]
+[INFO] [spawn_entity.py-4]: process started with pid [14552]
+[robot_state_publisher-1] Parsing robot urdf xml string.
+[robot_state_publisher-1] Link chassis had 4 children
+[robot_state_publisher-1] Link camera_link had 1 children
+[robot_state_publisher-1] Link camera_link_optical had 0 children
+[robot_state_publisher-1] Link caster_wheel had 0 children
+[robot_state_publisher-1] Link left_wheel had 0 children
+[robot_state_publisher-1] Link right_wheel had 0 children
+[robot_state_publisher-1] [INFO] [1783004185.538587973] [robot_state_publisher]: got segment base_footprint
+[robot_state_publisher-1] [INFO] [1783004185.538680560] [robot_state_publisher]: got segment camera_link
+[robot_state_publisher-1] [INFO] [1783004185.538687292] [robot_state_publisher]: got segment camera_link_optical
+[robot_state_publisher-1] [INFO] [1783004185.538692452] [robot_state_publisher]: got segment caster_wheel
+[robot_state_publisher-1] [INFO] [1783004185.538697472] [robot_state_publisher]: got segment chassis
+[robot_state_publisher-1] [INFO] [1783004185.538701760] [robot_state_publisher]: got segment left_wheel
+[robot_state_publisher-1] [INFO] [1783004185.538706088] [robot_state_publisher]: got segment right_wheel
+[spawn_entity.py-4] [INFO] [1783004185.856987816] [spawn_entity]: Spawn Entity started
+[spawn_entity.py-4] [INFO] [1783004185.857335128] [spawn_entity]: Loading entity XML from file /home/aosm/Mono Camera Depth Autonomuos Car/install/autonomous_car/share/autonomous_car/urdf/car.urdf
+[spawn_entity.py-4] [INFO] [1783004185.859001246] [spawn_entity]: Waiting for service /spawn_entity, timeout = 30
+[spawn_entity.py-4] [INFO] [1783004185.859309744] [spawn_entity]: Waiting for service /spawn_entity
+[spawn_entity.py-4] [INFO] [1783004186.865474263] [spawn_entity]: Calling service /spawn_entity
+[spawn_entity.py-4] [INFO] [1783004187.143023673] [spawn_entity]: Spawn status: SpawnEntity: Successfully spawned entity [autonomous_car]
+[INFO] [spawn_entity.py-4]: process has finished cleanly [pid 14552]
+[gzserver-2] [INFO] [1783004188.674441803] [camera_controller]: Publishing camera info to [/camera/camera_info]
+[gzserver-2] [INFO] [1783004188.675076092] [camera_controller]: Publishing depth camera info to [/camera/depth/camera_info]
+[gzserver-2] [INFO] [1783004188.675522734] [camera_controller]: Publishing pointcloud to [/camera/points]
+[gzserver-2] [INFO] [1783004188.762581803] [gazebo_ros_diff_drive]: Wheel pair 1 separation set to [0.350000m]
+[gzserver-2] [INFO] [1783004188.762654732] [gazebo_ros_diff_drive]: Wheel pair 1 diameter set to [0.140000m]
+[gzserver-2] [INFO] [1783004188.764173117] [gazebo_ros_diff_drive]: Subscribed to [/cmd_vel]
+[gzserver-2] [INFO] [1783004188.765411378] [gazebo_ros_diff_drive]: Advertise odometry on [/odom]
+[gzserver-2] [INFO] [1783004188.766588543] [gazebo_ros_diff_drive]: Publishing odom transforms between [odom] and [base_footprint]
+[gzserver-2] [INFO] [1783004188.766624432] [gazebo_ros_diff_drive]: Publishing wheel transforms between [base_footprint], [left_wheel_joint] and [right_wheel_joint]
+[robot_state_publisher-1] [INFO] [1783004274.858178926] [rclcpp]: signal_handler(signal_value=2)
+[INFO] [robot_state_publisher-1]: process has finished cleanly [pid 14545]
+[INFO] [gzclient   -3]: process has finished cleanly [pid 14549]
+[INFO] [gzserver-2]: process has finished cleanly [pid 14547]

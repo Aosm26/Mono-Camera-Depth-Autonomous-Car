@@ -1,0 +1,39 @@
+material Road/Asphalt
+{
+  technique
+  {
+    pass
+    {
+      ambient 0.8 0.8 0.8 1.0
+      diffuse 0.8 0.8 0.8 1.0
+      specular 0.1 0.1 0.1 1.0 12.5
+
+      texture_unit
+      {
+        texture road_asphalt.png
+        filtering trilinear
+        scale 0.2 0.2
+      }
+    }
+  }
+}
+
+material Road/Lanes
+{
+  technique
+  {
+    pass
+    {
+      ambient 0.8 0.8 0.8 1.0
+      diffuse 0.8 0.8 0.8 1.0
+      specular 0.1 0.1 0.1 1.0 12.5
+
+      texture_unit
+      {
+        texture road_asphalt.png
+        filtering trilinear
+        scale 1.0 0.5
+      }
+    }
+  }
+}
