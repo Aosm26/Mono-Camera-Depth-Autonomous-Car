@@ -3318,15 +3318,159 @@
         </visual>
       </link>
     </model>
-    <model name="barrier_left">
+
+    <!-- ============ YOL ÜZERİ ENGELLER ============ -->
+
+    <!-- Engel 1: Kırmızı kutu - Düz yolda (robot spawn'dan ~5m ileride) -->
+    <model name="obstacle_box_1">
       <static>true</static>
-      <pose>-23.5 0.0 0.4 0 0 0</pose>
+      <pose>-7.0 -10.0 0.3 0 0 0</pose>
       <link name="link">
         <collision name="collision">
-          <geometry><box><size>0.6 0.6 0.8</size></box></geometry>
+          <geometry><box><size>0.6 0.6 0.6</size></box></geometry>
         </collision>
         <visual name="visual">
-          <geometry><box><size>0.6 0.6 0.8</size></box></geometry>
+          <geometry><box><size>0.6 0.6 0.6</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Red</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Engel 2: Sarı silindir - Yolun sağ tarafında -->
+    <model name="obstacle_cyl_1">
+      <static>true</static>
+      <pose>-3.0 -9.5 0.4 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><cylinder><radius>0.3</radius><length>0.8</length></cylinder></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><cylinder><radius>0.3</radius><length>0.8</length></cylinder></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Yellow</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Engel 3: Mavi kutu - Yolun sol tarafında -->
+    <model name="obstacle_box_2">
+      <static>true</static>
+      <pose>1.0 -10.5 0.25 0 0 0.3</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>0.5 0.5 0.5</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.5 0.5 0.5</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Blue</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Engel 4: Yeşil kutu - Yol ortası -->
+    <model name="obstacle_box_3">
+      <static>true</static>
+      <pose>5.0 -10.0 0.35 0 0 0.5</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>0.7 0.7 0.7</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.7 0.7 0.7</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Green</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Engel 5: Kırmızı silindir - Düz yolun sonu -->
+    <model name="obstacle_cyl_2">
+      <static>true</static>
+      <pose>9.0 -9.8 0.4 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><cylinder><radius>0.35</radius><length>0.8</length></cylinder></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><cylinder><radius>0.35</radius><length>0.8</length></cylinder></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Red</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Engel 6: Beyaz duvar bariyeri - Yolu daraltır -->
+    <model name="obstacle_wall_1">
+      <static>true</static>
+      <pose>13.0 -10.2 0.3 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>0.3 2.0 0.6</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.3 2.0 0.6</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/White</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Engel 7: Turuncu kutu - Sağ virajda -->
+    <model name="obstacle_box_4">
+      <static>true</static>
+      <pose>20.0 -6.0 0.3 0 0 0.8</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>0.6 0.6 0.6</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.6 0.6 0.6</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Orange</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Engel 8: Gri silindir - Virajın tepesinde -->
+    <model name="obstacle_cyl_3">
+      <static>true</static>
+      <pose>22.5 0.0 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><cylinder><radius>0.4</radius><length>1.0</length></cylinder></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><cylinder><radius>0.4</radius><length>1.0</length></cylinder></geometry>
           <material>
             <script>
               <uri>file://media/materials/scripts/gazebo.material</uri>
@@ -3336,6 +3480,149 @@
         </visual>
       </link>
     </model>
+
+    <!-- Engel 9: Sarı kutu - Sol virajda -->
+    <model name="obstacle_box_5">
+      <static>true</static>
+      <pose>20.0 6.0 0.3 0 0 -0.8</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>0.6 0.6 0.6</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.6 0.6 0.6</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Yellow</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Engel 10: Kırmızı duvar bariyeri - Üst düz yolda -->
+    <model name="obstacle_wall_2">
+      <static>true</static>
+      <pose>8.0 10.0 0.3 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>0.3 1.8 0.6</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.3 1.8 0.6</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Red</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Engel 11: Mavi silindir - Üst düz yolun ortası -->
+    <model name="obstacle_cyl_4">
+      <static>true</static>
+      <pose>0.0 10.0 0.4 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><cylinder><radius>0.3</radius><length>0.8</length></cylinder></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><cylinder><radius>0.3</radius><length>0.8</length></cylinder></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Blue</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Engel 12: Yeşil kutu - Üst yolun sonunda -->
+    <model name="obstacle_box_6">
+      <static>true</static>
+      <pose>-8.0 10.3 0.3 0 0 0.2</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>0.6 0.6 0.6</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.6 0.6 0.6</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Green</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Engel 13: Turuncu silindir - Sol virajda -->
+    <model name="obstacle_cyl_5">
+      <static>true</static>
+      <pose>-20.0 6.0 0.4 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><cylinder><radius>0.3</radius><length>0.8</length></cylinder></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><cylinder><radius>0.3</radius><length>0.8</length></cylinder></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Orange</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Engel 14: Kırmızı kutu - Sol alt viraj -->
+    <model name="obstacle_box_7">
+      <static>true</static>
+      <pose>-22.5 0.0 0.3 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>0.6 0.6 0.6</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.6 0.6 0.6</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Red</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Engel 15: Beyaz duvar - Alt yolda daraltıcı -->
+    <model name="obstacle_wall_3">
+      <static>true</static>
+      <pose>-20.0 -6.0 0.3 0 0 0.8</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>0.3 1.5 0.6</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.3 1.5 0.6</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/White</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ============ YOL ÜZERİ ENGELLER SONU ============ -->
+
     <physics type="ode">
       <real_time_update_rate>1000.0</real_time_update_rate>
       <max_step_size>0.001</max_step_size>
