@@ -6,6 +6,7 @@ Bu script:
 2. Hailo-8L NPU üzerinde SCDepthV3 modeli ile derinlik tahmin eder.
 3. Derinlik haritasını 2D LaserScan formatına dönüştürür.
 4. LaserScan verisini PC'deki ROS2'ye geri gönderir.
+5. Canlı web yayını (MJPEG ve Telemetri) sunar.
 """
 
 import cv2
@@ -14,6 +15,8 @@ import time
 import base64
 import sys
 import os
+import threading
+from flask import Flask, Response, render_template, jsonify
 from hailo_platform import (
     HEF, VDevice, HailoStreamInterface,
     InferVStreams, ConfigureParams,
@@ -26,11 +29,12 @@ import roslibpy
 PC_IP = "127.0.0.1"  # PC'nizin IP adresini buraya yazın (örn: "192.168.1.50")
 PORT = 9090          # Rosbridge websocket portu
 
-HEF_PATH = "/usr/local/hailo/resources/models/hailo8l/scdepthv3.hef"
-
-# Model giriş/çıkış çözünürlükleri (SCDepthV3 için)
-MODEL_W = 320
-MODEL_H = 256
+# Model Seçim Haritası
+MODELS_MAP = {
+    "scdepth": "/home/rpi5/autonomous_car_rpi/scdepthv3.hef",
+    "fastdepth": "/home/rpi5/autonomous_car_rpi/fast_depth.hef",
+}
+DEFAULT_HEF_PATH = MODELS_MAP["scdepth"]
 
 # Sanal LaserScan Ayarları
 FOV = 1.089          # Kameranın Yatay Görüş Açısı (Radyan cinsinden, ~62.4 derece)
@@ -39,13 +43,19 @@ MAX_RANGE = 6.0      # Maksimum algılama mesafesi (metre)
 # =======================================
 
 class RpiObstacleDetector:
-    def __init__(self):
-        print(f"SCDepthV3 HEF yükleniyor: {HEF_PATH}")
-        if not os.path.exists(HEF_PATH):
-            print(f"HATA: HEF dosyası bulunamadı! Lütfen yolu kontrol edin: {HEF_PATH}")
+    def __init__(self, hef_path=DEFAULT_HEF_PATH):
+        print(f"HEF yükleniyor: {hef_path}")
+        if not os.path.exists(hef_path):
+            print(f"HATA: HEF dosyası bulunamadı! Lütfen yolu kontrol edin: {hef_path}")
             sys.exit(1)
 
-        self.hef = HEF(HEF_PATH)
+        self.hef = HEF(hef_path)
+        
+        # HEF dosyasından giriş çözünürlüklerini dinamik olarak al
+        input_infos = self.hef.get_input_vstream_infos()
+        self.model_h, self.model_w, self.model_c = input_infos[0].shape
+        print(f"Model çözünürlüğü dinamik tespit edildi: {self.model_w}x{self.model_h}x{self.model_c}")
+
         self.vdevice = VDevice()
         
         # Model Yapılandırması
@@ -78,7 +88,10 @@ class RpiObstacleDetector:
         # Publisher & Subscriber Tanımları
         self.scan_pub = roslibpy.Topic(self.client, '/scan', 'sensor_msgs/LaserScan')
         self.depth_img_pub = roslibpy.Topic(self.client, '/camera/depth/image_raw', 'sensor_msgs/Image')
-        self.image_sub = roslibpy.Topic(self.client, '/camera/image_raw', 'sensor_msgs/Image')
+        self.image_sub = roslibpy.Topic(
+            self.client, '/camera/image_raw/compressed', 'sensor_msgs/CompressedImage',
+            queue_length=1      # ROS Bridge tarafında eski kareleri biriktirmeden sil
+        )
         
         self.client.on_ready(self.on_ros_ready)
         self.is_connected = False
@@ -86,63 +99,167 @@ class RpiObstacleDetector:
         self.last_time = time.time()
         self.frame_count = 0
 
+        # Canlı Web Yayını & Paylaşılan Veri Değişkenleri
+        self.data_lock = threading.Lock()
+        self.latest_rgb_jpeg = None
+        self.latest_depth_jpeg = None
+        self.latest_ranges = []
+        self.npu_fps = 0.0
+
+        # Görüntü işleme kuyruğu ve senkronizasyon (Frame Dropping için)
+        self.latest_msg = None
+        self.msg_event = threading.Event()
+        self.processing_running = True
+        self.process_thread = threading.Thread(target=self.process_loop, daemon=True)
+        self.process_thread.start()
+
+        # Flask Web Sunucusu Kurulumu
+        self.app = Flask(__name__)
+        self.flask_thread = threading.Thread(target=self.run_flask, daemon=True)
+        self.flask_thread.start()
+
+    def run_flask(self):
+        # Werkzeug loglarını sadece hata seviyesinde göstererek terminal kirliliğini önle
+        import logging
+        log = logging.getLogger('werkzeug')
+        log.setLevel(logging.ERROR)
+        
+        @self.app.route('/')
+        def index():
+            return render_template('index.html')
+            
+        @self.app.route('/video_feed/rgb')
+        def video_feed_rgb():
+            return Response(self.gen_rgb(), mimetype='multipart/x-mixed-replace; boundary=frame')
+            
+        @self.app.route('/video_feed/depth')
+        def video_feed_depth():
+            return Response(self.gen_depth(), mimetype='multipart/x-mixed-replace; boundary=frame')
+            
+        @self.app.route('/telemetry')
+        def telemetry():
+            with self.data_lock:
+                return jsonify({
+                    'connected': self.is_connected,
+                    'fps': self.npu_fps,
+                    'pc_ip': PC_IP,
+                    'pc_port': PORT,
+                    'ranges': self.latest_ranges
+                })
+                
+        # Flask sunucusunu tüm arayüzlerde çalıştır
+        self.app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False)
+
+    def gen_rgb(self):
+        while True:
+            with self.data_lock:
+                jpeg_bytes = self.latest_rgb_jpeg
+            if jpeg_bytes is not None:
+                yield (b'--frame\r\n'
+                       b'Content-Type: image/jpeg\r\n\r\n' + jpeg_bytes + b'\r\n')
+            time.sleep(0.05) # ~20 FPS limit
+            
+    def gen_depth(self):
+        while True:
+            with self.data_lock:
+                jpeg_bytes = self.latest_depth_jpeg
+            if jpeg_bytes is not None:
+                yield (b'--frame\r\n'
+                       b'Content-Type: image/jpeg\r\n\r\n' + jpeg_bytes + b'\r\n')
+            time.sleep(0.05)
+
     def on_ros_ready(self):
         print("ROS Bridge bağlantısı kuruldu! Dinleme başlatılıyor...")
         self.is_connected = True
         self.image_sub.subscribe(self.image_callback)
 
     def image_callback(self, msg):
-        try:
-            # 1. Görüntüyü ROS formatından OpenCV formatına dönüştür
-            height = msg['height']
-            width = msg['width']
-            encoding = msg['encoding']
+        # Sadece en son gelen görüntüyü kaydet ve işleme thread'ini uyandır
+        with self.data_lock:
+            self.latest_msg = msg
+        self.msg_event.set()
+
+    def process_loop(self):
+        while self.processing_running:
+            # Yeni bir görüntü gelene kadar bekle
+            self.msg_event.wait(timeout=0.1)
+            if not self.processing_running:
+                break
+            if not self.msg_event.is_set():
+                continue
             
-            # Base64 verisini decode et
-            img_data = base64.b64decode(msg['data'])
-            np_arr = np.frombuffer(img_data, dtype=np.uint8)
-            
-            if encoding == "rgb8":
-                img = np_arr.reshape((height, width, 3))
-            elif encoding == "bgr8":
-                img = cv2.cvtColor(np_arr.reshape((height, width, 3)), cv2.COLOR_BGR2RGB)
-            else:
-                # Varsayılan deneme
-                img = np_arr.reshape((height, width, 3))
+            # Son gelen mesajı al ve event'i temizle
+            with self.data_lock:
+                msg = self.latest_msg
+                self.latest_msg = None
+                self.msg_event.clear()
 
-            # 2. NPU Girişine Uygun Şekillendir (256x320)
-            resized = cv2.resize(img, (MODEL_W, MODEL_H))
-            input_data = np.expand_dims(resized, axis=0).astype(np.uint8)
+            if msg is None:
+                continue
 
-            # 3. NPU Inference
-            input_name = self.hef.get_input_vstream_infos()[0].name
-            output_name = self.hef.get_output_vstream_infos()[0].name
-            
-            results = self.infer_pipeline.infer({input_name: input_data})
-            depth_map = results[output_name][0]
-            
-            if len(depth_map.shape) == 3:
-                depth_map = depth_map[:, :, 0]
+            try:
+                # 1. Görüntüyü ROS formatından (CompressedImage) OpenCV formatına dönüştür
+                # Base64 verisini decode et
+                img_data = base64.b64decode(msg['data'])
+                np_arr = np.frombuffer(img_data, dtype=np.uint8)
+                
+                # cv2.imdecode returns BGR image
+                img_bgr = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+                if img_bgr is None:
+                    continue
+                
+                # Convert to RGB for NPU processing
+                img = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
 
-            # 4. Derinliği LaserScan ve Derinlik Görüntüsüne Dönüştür
-            self.publish_scan(depth_map, msg['header'])
-            self.publish_depth_image(depth_map, msg['header'])
+                # Web yayını için gelen RGB görüntüyü JPEG kodla (Zaten elimizde JPEG var)
+                rgb_bytes = img_data
 
-            # 5. FPS Göster
-            self.frame_count += 1
-            now = time.time()
-            if now - self.last_time >= 1.0:
-                fps = self.frame_count / (now - self.last_time)
-                print(f"NPU Derinlik & ROS2 Aktarımı: {fps:.1f} FPS")
-                self.frame_count = 0
-                self.last_time = now
+                # 2. NPU Girişine Uygun Şekillendir
+                resized = cv2.resize(img, (self.model_w, self.model_h))
+                input_data = np.expand_dims(resized, axis=0).astype(np.uint8)
 
-        except Exception as e:
-            print(f"Görüntü işleme hatası: {e}")
+                # 3. NPU Inference
+                input_name = self.hef.get_input_vstream_infos()[0].name
+                output_name = self.hef.get_output_vstream_infos()[0].name
+                
+                results = self.infer_pipeline.infer({input_name: input_data})
+                depth_map = results[output_name][0]
+                
+                if len(depth_map.shape) == 3:
+                    depth_map = depth_map[:, :, 0]
+
+                # 4. Derinliği LaserScan ve Derinlik Görüntüsüne Dönüştür
+                self.publish_scan(depth_map, msg['header'])
+                color_depth_bgr = self.publish_depth_image(depth_map, msg['header'])
+
+                # Web yayını için Jet renkli derinlik haritasını JPEG kodla
+                if color_depth_bgr is not None:
+                    _, jpeg_depth = cv2.imencode('.jpg', color_depth_bgr)
+                    depth_bytes = jpeg_depth.tobytes()
+                else:
+                    depth_bytes = None
+
+                # 5. FPS Göster ve Web Sunucusu İçin Verileri Güncelle
+                self.frame_count += 1
+                now = time.time()
+                fps = self.npu_fps
+                if now - self.last_time >= 1.0:
+                    fps = self.frame_count / (now - self.last_time)
+                    print(f"NPU Derinlik & ROS2 Aktarımı: {fps:.1f} FPS")
+                    self.frame_count = 0
+                    self.last_time = now
+
+                with self.data_lock:
+                    self.latest_rgb_jpeg = rgb_bytes
+                    if depth_bytes is not None:
+                        self.latest_depth_jpeg = depth_bytes
+                    self.npu_fps = fps
+
+            except Exception as e:
+                print(f"Görüntü işleme hatası: {e}")
 
     def publish_scan(self, depth_map, original_header):
         # SCDepthV3 log-depth veya normalize edilmemiş ters derinlik çıktısı üretir.
-        # Bu değerleri makul metre aralıklarına doğrusal eşleriz.
         d_min = depth_map.min()
         d_max = depth_map.max()
         
@@ -151,8 +268,8 @@ class RpiObstacleDetector:
             d_max += 0.001
 
         # Görüntünün ortasındaki birkaç satırı alıp dikey ortalamasını kullanalım
-        mid_row_start = MODEL_H // 2 - 5
-        mid_row_end = MODEL_H // 2 + 5
+        mid_row_start = self.model_h // 2 - 5
+        mid_row_end = self.model_h // 2 + 5
         horizontal_profile = np.mean(depth_map[mid_row_start:mid_row_end, :], axis=0)
 
         # Eşleme işlemi: Büyük değerler yakını, küçük değerler uzağı temsil eder
@@ -160,9 +277,11 @@ class RpiObstacleDetector:
         ranges = MIN_RANGE + (1.0 - norm_profile) * (MAX_RANGE - MIN_RANGE)
         
         # ROS LaserScan kuralına göre: Açı dizisi soldan sağa (artıdan eksiye) olmalı.
-        # depth_map'in sol sütunu robotun solunu temsil eder.
-        # ranges listesini LaserScan formatına hazırlıyoruz.
         ranges_list = ranges.tolist()
+
+        # Web sunucusu için son tarama verisini güncelle
+        with self.data_lock:
+            self.latest_ranges = ranges_list
 
         # LaserScan Mesajı Oluştur
         scan_msg = {
@@ -172,7 +291,7 @@ class RpiObstacleDetector:
             },
             'angle_min': -FOV / 2.0,
             'angle_max': FOV / 2.0,
-            'angle_increment': FOV / float(MODEL_W),
+            'angle_increment': FOV / float(self.model_w),
             'time_increment': 0.0,
             'scan_time': 0.06,  # ~15 FPS
             'range_min': MIN_RANGE,
@@ -220,8 +339,12 @@ class RpiObstacleDetector:
             
             if self.client.is_connected:
                 self.depth_img_pub.publish(roslibpy.Message(depth_img_msg))
+
+            # Web yayını için BGR formatındaki renkli derinlik görselini döndür
+            return color_depth
         except Exception as e:
             print(f"Derinlik görüntüsü yayınlama hatası: {e}")
+            return None
 
     def run(self):
         try:
@@ -229,16 +352,60 @@ class RpiObstacleDetector:
         except KeyboardInterrupt:
             print("Kapatılıyor...")
         finally:
-            # Temizlik
-            self.infer_pipeline.__exit__(None, None, None)
-            self.activation.__exit__(None, None, None)
-            self.vdevice.close()
-            self.client.terminate()
+            # İşleyici thread'i durdur
+            self.processing_running = False
+            self.msg_event.set()
+            try:
+                self.process_thread.join(timeout=1.0)
+            except:
+                pass
+            
+            # Temizlik (Hata fırlatmadan temiz kapanış yapabilmesi için try-except blokları eklendi)
+            try:
+                self.infer_pipeline.__exit__(None, None, None)
+            except:
+                pass
+            try:
+                self.activation.__exit__(None, None, None)
+            except:
+                pass
+            try:
+                self.vdevice.release()
+            except:
+                pass
+            try:
+                self.client.terminate()
+            except Exception as e:
+                pass
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        PC_IP = sys.argv[1]
+    import argparse
     
+    parser = argparse.ArgumentParser(description="Raspberry Pi 5 Hailo-8L Obstacle Detector")
+    parser.add_argument("ip", nargs="?", default="127.0.0.1", help="PC ROS Bridge IP address")
+    parser.add_argument("--hef", "-m", "--model", default="scdepth",
+                        help="Model key ('scdepth' or 'fastdepth') or direct HEF file path")
+    args = parser.parse_args()
+    
+    PC_IP = args.ip
+    model_choice = args.hef.lower()
+    
+    # Eşleme haritasından HEF yolunu al veya doğrudan girilen yolu kullan
+    if model_choice in MODELS_MAP:
+        hef_path = MODELS_MAP[model_choice]
+    else:
+        hef_path = args.hef
+        # Eğer girilen dosya mevcut değilse ve uzantısız girildiyse varsayılan dizinde ara
+        if not os.path.exists(hef_path):
+            default_dir = "/usr/local/hailo/resources/models/hailo8l"
+            potential_path = os.path.join(default_dir, hef_path)
+            if not potential_path.endswith(".hef"):
+                potential_path += ".hef"
+            if os.path.exists(potential_path):
+                hef_path = potential_path
+            
     print(f"ROS Bridge sunucusuna bağlanılıyor: ws://{PC_IP}:{PORT}")
-    detector = RpiObstacleDetector()
+    print(f"Seçilen Model: {model_choice} -> {hef_path}")
+    detector = RpiObstacleDetector(hef_path=hef_path)
     detector.run()
+

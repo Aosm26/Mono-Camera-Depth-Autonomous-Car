@@ -55,19 +55,25 @@ cleanup() {
 trap cleanup SIGINT SIGTERM
 
 # 1. Start Gazebo Simulation
-echo -e "${GREEN}[1/3] Starting Gazebo Simulation (logging to simulation.log)...${NC}"
+echo -e "${GREEN}[1/4] Starting Gazebo Simulation (logging to simulation.log)...${NC}"
 ros2 launch autonomous_car sim_launch.py > simulation.log 2>&1 &
 PIDS+=($!)
 sleep 5 # Wait for Gazebo to initialize
 
 # 2. Start Rosbridge Server
-echo -e "${GREEN}[2/3] Starting Rosbridge Server (logging to rosbridge.log)...${NC}"
+echo -e "${GREEN}[2/4] Starting Rosbridge Server (logging to rosbridge.log)...${NC}"
 ros2 launch rosbridge_server rosbridge_websocket_launch.xml > rosbridge.log 2>&1 &
 PIDS+=($!)
 sleep 2
 
-# 3. Start PC Obstacle Avoidance Controller
-echo -e "${GREEN}[3/3] Starting Obstacle Avoidance Controller...${NC}\n"
+# 3. Start PC Image Compressor Node
+echo -e "${GREEN}[3/4] Starting Image Compressor Node (logging to compressor.log)...${NC}"
+/usr/bin/python3 image_compressor.py > compressor.log 2>&1 &
+PIDS+=($!)
+sleep 1
+
+# 4. Start PC Obstacle Avoidance Controller
+echo -e "${GREEN}[4/4] Starting Obstacle Avoidance Controller...${NC}\n"
 # Run this in the foreground so the user can see the logs directly in the terminal
 /usr/bin/python3 pc_obstacle_avoidance.py
 

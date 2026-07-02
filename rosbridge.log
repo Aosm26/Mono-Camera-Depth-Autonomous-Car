@@ -1,22 +1,30 @@
-[INFO] [launch]: All log files can be found below /home/aosm/.ros/log/2026-07-02-17-56-30-309841-aosm-IdeaPad-Gaming-3-15ACH6-14794
+[INFO] [launch]: All log files can be found below /home/aosm/.ros/log/2026-07-02-18-25-27-745737-aosm-IdeaPad-Gaming-3-15ACH6-18973
 [INFO] [launch]: Default logging verbosity is set to INFO
-[INFO] [rosbridge_websocket-1]: process started with pid [14801]
-[INFO] [rosapi_node-2]: process started with pid [14803]
-[rosbridge_websocket-1] [WARN] [1783004190.943967404] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
-[rosbridge_websocket-1] [WARN] [1783004195.947329205] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
-[rosbridge_websocket-1] [WARN] [1783004200.951260941] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
-[rosbridge_websocket-1] [WARN] [1783004205.955251269] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
-[rosbridge_websocket-1] [WARN] [1783004210.959124438] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
-[rosbridge_websocket-1] [WARN] [1783004215.964112008] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
-[rosbridge_websocket-1] [WARN] [1783004220.968114770] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
-[rosbridge_websocket-1] [WARN] [1783004225.972583495] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
-[rosbridge_websocket-1] [WARN] [1783004230.975823753] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
-[rosbridge_websocket-1] [WARN] [1783004235.980649767] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
-[rosbridge_websocket-1] [WARN] [1783004240.986266974] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
-[rosbridge_websocket-1] [WARN] [1783004245.991741337] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
-[rosbridge_websocket-1] [WARN] [1783004250.995792679] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
-[rosbridge_websocket-1] [WARN] [1783004256.001668617] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
-[rosbridge_websocket-1] [WARN] [1783004261.007741232] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
-[rosbridge_websocket-1] [WARN] [1783004266.011387109] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
-[rosbridge_websocket-1] [WARN] [1783004271.017049356] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
-[rosbridge_websocket-1] [WARN] [1783004276.023611354] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[INFO] [rosbridge_websocket-1]: process started with pid [18978]
+[INFO] [rosapi_node-2]: process started with pid [18980]
+[rosbridge_websocket-1] [WARN] [1783005928.225281306] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783005933.232462562] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783005938.235073527] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783005943.242884385] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783005948.251562078] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783005953.258826214] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783005958.263972590] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783005963.267721056] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783005968.271951078] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783005973.276771511] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783005978.279590742] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783005983.284303023] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783005988.287120711] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783005993.293952724] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783005998.300272615] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783006003.304311804] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783006008.308740364] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783006013.311412339] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783006018.316672337] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783006023.324080343] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783006028.327966017] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783006033.332794980] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783006038.335775577] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783006043.339653514] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783006048.345134724] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.
+[rosbridge_websocket-1] [WARN] [1783006053.351341527] [rosbridge_websocket]: Unable to start server: [Errno 98] Address already in use Retrying in 5.0s.

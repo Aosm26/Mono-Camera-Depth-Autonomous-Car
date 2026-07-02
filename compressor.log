@@ -1,0 +1,1 @@
+[INFO] [1783005930.101979239] [image_compressor]: Image Compressor Node started. Subscribed to /camera/image_raw, publishing to /camera/image_raw/compressed
