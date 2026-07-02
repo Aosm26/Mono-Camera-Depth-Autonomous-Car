@@ -18,3 +18,4 @@ install/
 .idea/
 *.swp
 *~
+/scdepth_dataset_prep/dataset/training/*
